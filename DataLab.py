@@ -155,28 +155,12 @@ test_data= test_data.drop(list(trolls_ts), axis=0)
 #
 sns.heatmap(train_data.isnull(),yticklabels=False)
 plt.show()
-#
-# # Looking at the data, it seems that where we have a NaN in [Tage...] the value in [Anzahl...] is 0 else we have non-zero variable.
-# # Meanwhile, instead of droping this column [Tage...] I will fill the missing values by 0.
-#
-# #
-# TA=train_data[['Tage_seit_letzter_Kampagne','Anzahl_Kontakte_letzte_Kampagne']]
-# TA.head(30)
-#
-# print(train_data[['Tage_seit_letzter_Kampagne',
-#        'Anzahl_Kontakte_letzte_Kampagne']].corr())
-#
-# train_data=train_data.fillna(0)
-# test_data=test_data.fillna(0)
-#
-# print(train_data[['Tage_seit_letzter_Kampagne',
-#        'Anzahl_Kontakte_letzte_Kampagne']].corr())
-#
+
+
+#After some examination, having or not having the Tag... variable does not change the result and so I drop it.
 train_data.drop('Tage_seit_letzter_Kampagne',axis=1,inplace=True)
-# print(train_data.columns)
-# #
-# # # ////////////////////////////categorical Data///////////////////////////////////////
-# #
+
+
 # encoding target values manually.
 cleanup_nums = {'Zielvariable':{'nein':0,'ja':1}}
 train_data.replace(cleanup_nums, inplace=True)
@@ -185,14 +169,10 @@ train_data.replace(cleanup_nums, inplace=True)
 train_data['Kontostand'] = ['Negative' if x < 0 else 'Null' if x == 0 else 'positive' if x > 0 else 'NaN' for x in train_data['Kontostand']]
 test_data['Kontostand'] = ['Negative' if x < 0 else 'Null' if x == 0 else 'positive' if x > 0 else 'NaN' for x in test_data['Kontostand']]
 #
-# #
-# # train_data['Tage_seit_letzter_Kampagne'] = [1 if x > 0 else 0 for x in train_data['Tage_seit_letzter_Kampagne']]
-# # test_data['Tage_seit_letzter_Kampagne'] = [1 if x > 0 else 0 for x in test_data['Tage_seit_letzter_Kampagne']]
-#
-#
-#  Encoding categorical data using get_dummies
 
-cat_vars_list=['Kontostand','Geschlecht','Familienstand','Haus','Kredit','Ausfall_Kredit','Kontaktart',
+
+#  Encoding categorical data using get_dummies
+cat_vars_list=['Kontostand','Familienstand','Haus','Kredit','Ausfall_Kredit','Kontaktart',
           'Schulabschluß', 'Ergebnis_letzte_Kampagne','Art_der_Anstellung','Monat']
 for var in cat_vars_list:
     cat_var_train='var'+'_'+ var
@@ -213,8 +193,9 @@ Test_dt=test_data[keep_test]
 print(Train_dt.columns)
 print(Test_dt.columns)
 
-Train_dt=Train_dt.drop(['Tag','Stammnummer','Anruf-ID'],axis=1)
-Test_dt=Test_dt.drop(['Tag','Stammnummer','Anruf-ID','Zielvariable'],axis=1)
+# droping some unuseful variables
+Train_dt=Train_dt.drop(['Tag','Stammnummer','Anruf-ID','Geschlecht'],axis=1)
+Test_dt=Test_dt.drop(['Tag','Stammnummer','Anruf-ID','Geschlecht','Zielvariable'],axis=1)
 
 Features=Train_dt.drop(['Zielvariable'], axis=1)
 Features_name=Features.columns
@@ -230,17 +211,17 @@ Features=pd.DataFrame(Features,columns=Features_name)
 Test_dt=pd.DataFrame(Test_dt,columns=Test_dt_col)
 Train_dt = Features.join(Train_dt['Zielvariable'])
 
+# droping the NaN values
 Train_dt=Train_dt.dropna()
 
 
+# Data balancing using SMOTE
 X = Train_dt[Features_name]
 y = Train_dt[['Zielvariable']]
-
-
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
 smt = SMOTE(random_state=0)
 columns = x_train.columns
-smt_data_X,smt_data_y = smt.fit_sample(x_train, y_train)
+smt_data_X,smt_data_y = smt.fit_sample(x_train, y_train.values.ravel())
 smt_data_X = pd.DataFrame(data=smt_data_X,columns=columns )
 smt_data_y= pd.DataFrame(data=smt_data_y,columns=['Zielvariable'])
 print("length of oversampled data is ",len(smt_data_X))
@@ -249,59 +230,25 @@ print("Number of subscription",len(smt_data_y[smt_data_y['Zielvariable']==1]))
 print("Proportion of no subscription data in oversampled data is ",len(smt_data_y[smt_data_y['Zielvariable']==0])/len(smt_data_X))
 print("Proportion of subscription data in oversampled data is ",len(smt_data_y[smt_data_y['Zielvariable']==1])/len(smt_data_X))
 #
-# Features Selecetion
 
-data_final_vars=Train_dt.columns.values.tolist()
-y = smt_data_y['Zielvariable']
-X = [i for i in data_final_vars if i not in y]
+#
 
-# feature extraction
-model = ExtraTreesClassifier()
-fit = model.fit(smt_data_X, smt_data_y.values.ravel())
-for feature in zip(Features_name, fit.feature_importances_):
-    print(feature)
-
-
-sfm = SelectFromModel(model, threshold=0.01)
-sfm.fit(smt_data_X, smt_data_y.values.ravel())
-Features_name_list=[]
-for feature_list_index in sfm.get_support(indices=True):
-    Features_name_list.append(Features_name[feature_list_index])
-    print(Features_name[feature_list_index])
-
-
-Et_selected=Features_name_list
-# selected_x=smt_data_X[Et_selected]
-# y=smt_data_y['Zielvariable']
-# logit_model=sm.Logit(y,selected_x)
-# result=logit_model.fit()
-# print(result.summary2())
 # #
-# # removing the features with p_values>0.05
-# unwanted={'Alter','Geschlecht_m','Kontostand_Negative','Kontostand_Null','Kontostand_positive','Geschlecht_w','Familienstand_geschieden','Art_der_Anstellung_Dienstleistung','Art_der_Anstellung_Technischer Beruf','Art_der_Anstellung_Management',
-#  'Art_der_Anstellung_Verwaltung','Familienstand_single','Familienstand_verheiratet','Monat_aug','Monat_jul','Haus_ja','Haus_nein','Kredit_ja','Kredit_nein','Ergebnis_letzte_Kampagne_Unbekannt'}
+# # # Feature Optimization
+X = smt_data_X
+y = smt_data_y['Zielvariable']
 
-unwanted={'Geschlecht_m','Geschlecht_w'}
+#
 
-opt_Et_selected=[elm for elm in Et_selected if elm not in unwanted]
-#
-#
-# selected_x=smt_data_X[opt_Et_selected]
-# y=smt_data_y['Zielvariable']
-# logit_model=sm.Logit(y,selected_x)
-# result=logit_model.fit()
-# print(result.summary2())
-#
-#
 #
 # Data Training (Logistic Regression. Random Forest Classsifier, Decision Tree Classifier)
-selected_x=smt_data_X[opt_Et_selected]
+selected_x = smt_data_X[Features_name]
 X_train, X_test, y_train, y_test = train_test_split(selected_x, y, test_size=0.3, random_state=0)
 logreg = LogisticRegression()
 predicted = cross_val_predict(logreg, selected_x, y, cv=10)
 logreg.fit(X_train, y_train)
 #
-y_pred_lr= logreg.predict(X_test)
+y_pred_lr = logreg.predict(X_test)
 print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(logreg.score(X_test,y_test)))
 print('Logistic-regression (cross_validation):',metrics.accuracy_score(y, predicted))
 
@@ -309,7 +256,7 @@ confusion_matrix = confusion_matrix(y_pred_lr,y_test)
 print(confusion_matrix)
 
 print(classification_report(y_pred_lr,y_test))
-
+#
 dtc = DecisionTreeClassifier()
 dtc.fit(X_train, y_train)
 
@@ -409,7 +356,7 @@ plt.show()
 # Extracting the result
 winner_model=RandomForestClassifier(n_estimators=100, max_depth=30, random_state=0)
 winner_model.fit(X_train, y_train)
-Test_Data=Test_dt[opt_Et_selected]
+Test_Data = Test_dt[Features_name]
 
 prediction=pd.DataFrame(winner_model.predict(Test_Data),columns=['Zielvariable'])
 proba=pd.DataFrame(list(winner_model.predict_proba(Test_Data)),columns=['zero','one'])
