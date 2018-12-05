@@ -11,5 +11,5 @@ Create various predictive models (logistic regression, decision trees, and rando
 ##### Download the Data
 
 Download the data files from FarnoushSh into the data directory.
-You can find the train and test data here [a link](https://stackoverflow.com/questions/7653483/github-relative-link-in-markdown-file)
+You can find the train and test data [here](https://github.com/FarnoushSh/for-test/tree/master/Data)
 
