@@ -8,5 +8,8 @@ Create various predictive models (logistic regression, decision trees, and rando
 
 ## Installation
 
-### Download the Data
+##### Download the Data
+
+Download the data files from FarnoushSh into the data directory.
+<\li> You can find the train and test data here</li>
 
