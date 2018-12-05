@@ -21,7 +21,7 @@ Download the data files from FarnoushSh into the data directory.
 
 # Usage
 * Run python DataLab.py.
--- This loads the train and test datasetes.
+-* This loads the train and test datasetes.
 -- Makes some plots to visualize the data to find the outliers and missing values
 --- plots give idea about the features related to the target variable
 -- removes the outliers and missing values
