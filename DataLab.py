@@ -150,6 +150,7 @@ plt.show()
 
 #After some examination, having or not having the Tag... elmiable does not change the result and so I drop it.
 train_data.drop('Tage_seit_letzter_Kampagne',axis=1,inplace=True)
+test_data.drop('Tage_seit_letzter_Kampagne',axis=1,inplace=True)
 
 
 # encoding target values manually.
@@ -203,6 +204,8 @@ Train_dt = Features.join(Train_dt['Zielvariable'])
 
 # droping the NaN values
 Train_dt=Train_dt.dropna()
+Test_dt=Test_dt.dropna()
+
 
 
 # Data balancing using SMOTE
@@ -346,8 +349,9 @@ print(proba.head())
 test_Id=test_data['Stammnummer']
 predicted=proba['one']
 
-my_submission = pd.DataFrame({'ID': test_Id, 'Expected': predicted})
-
+my_submission = pd.DataFrame({'ID': test_Id.values,'Expected': predicted})
+#
 my_submission.to_csv('submission.csv', index=False)
 result=pd.read_csv('submission.csv')
-print(result.head(30))
+print(result)
+
