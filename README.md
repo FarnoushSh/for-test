@@ -30,3 +30,7 @@ Download the data files from FarnoushSh into the data directory.
         * prints the accuracy scores.
         * plots AUC curves and box plots for comparing.
     * prints the prediction of the probability of completion of buying.
+* One can also put the FeaturesSelection.py in the main file aftr balancing the data (before impleting the machine learning algorithms).
+    * No improvement!
+* Run UsefulFunction.py by putting that after loading the datasets (if it is necessary). 	
+	
