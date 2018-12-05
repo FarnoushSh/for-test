@@ -16,17 +16,17 @@ Download the data files from FarnoushSh into the data directory.
 
 ### Install the requirements
 * Install the requirements using Markup: 'pip install -r requirements.txt'.
-    *Make sure you use Python 3.
-    *You may want to use a virtual environment for this.
+     *Make sure you use Python 3.
+     *You may want to use a virtual environment for this.
 
 # Usage
 * Run python DataLab.py.
     * This loads the train and test datasetes.
     * Makes some plots to visualize the data to find the outliers and missing values
-        * plots give idea about the features related to the target variable
+         * plots give idea about the features related to the target variable
     *removes the outliers and missing values
     *balances the datasets
     *runs the Machine learning algorithms
-        *prints the accuracy score.
-        *plots AUC curves and box plots for comparing
+         *prints the accuracy score.
+         *plots AUC curves and box plots for comparing
     *prints the prediction of the probability of completion of buying.
