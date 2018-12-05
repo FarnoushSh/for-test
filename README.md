@@ -21,8 +21,8 @@ Download the data files from FarnoushSh into the data directory.
 
 # Usage
 * Run python DataLab.py.
-      * This loads the train and test datasetes.
-      * Makes some plots to visualize the data to find the outliers and missing values
+    +This loads the train and test datasetes.
+    -Makes some plots to visualize the data to find the outliers and missing values
         *plots give idea about the features related to the target variable
     *removes the outliers and missing values
     *balances the datasets
@@ -30,7 +30,3 @@ Download the data files from FarnoushSh into the data directory.
         *prints the accuracy score.
         *plots AUC curves and box plots for comparing
     *prints the prediction of the probability of completion of buying.
-* Bullet list
-              * Nested bullet
-                  * Sub-nested bullet etc
-          * Bullet list item 2
