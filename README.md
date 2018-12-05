@@ -16,8 +16,8 @@ Download the data files from FarnoushSh into the data directory.
 
 ### Install the requirements
 * Install the requirements using `pip install -r requirements.txt`.
-     *Make sure you use Python 3.
-     *You may want to use a virtual environment for this.
+    *Make sure you use Python 3.
+    *You may want to use a virtual environment for this.
 
 # Usage
 * Run python DataLab.py.
